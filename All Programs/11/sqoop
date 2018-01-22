@@ -1,0 +1,16 @@
+#echo "Please enter your MySql database details"
+			#read -p 'username: ' user
+			#read -sp 'password: ' password
+			user=$(yad --title "MYSQL Details" --entry --text '<span foreground="red" font="14">Please enter your MySql database details</span><span font="12">\n<b>Enter UserName</b>\n</span>' --width=450 --height=100 --center --button="gtk-cancel:252" --button="gtk-ok:0")
+			password=$(yad --title "MYSQL Details" --entry --text '<span foreground="red" font="14">Please enter your MySql database details</span><span font="12">\n<b>Enter Password</b>\n</span>' --width=450 --height=100 --center --button="gtk-cancel:252" --button="gtk-ok:0")
+			#for above mysql 5.6x set the username and password in login-path
+			#mysql -u root -p krrish123
+			
+			mysql_config_editor set --login-path=local --host=localhost --user=$user --password
+			#echo -n $password > /home/hduser/import.txt
+			#hadoop fs -rm /user/import.txt
+			#hadoop fs -put /home/hduser/import.txt /user/
+			mysql --login-path=local -e "create database if not exists project;use project;drop table if exists h1b10;create table h1b10(employee_name varchar(100),total_application int,success_rate varchar(40)); exit;"
+			#mysql_config_editor remove --login-path=local
+			sqoop export --connect jdbc:mysql://localhost/project --username $user --password-file /user/import.txt --table h1b10 --update-mode allowinsert --update-key employee_name --export-dir /niit/projout10/p* --input-fields-terminated-by '@' ;
+			mysql --login-path=local -e "use project;select * from h1b10;"
